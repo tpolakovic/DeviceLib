@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import numpy as np
 from phidl import Device, Layer
 import phidl.geometry as pg
 

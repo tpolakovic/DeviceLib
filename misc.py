@@ -1,22 +1,12 @@
 #!/usr/bin/env python3
 
-from phidl import Device, Layer, set_quickplot_options, quickplot, Path
+from phidl import Device, Path
 import phidl.geometry as pg
 import phidl.path as pp
 
 def _anl_logo_base():
     D = Device()
     P = Path()
-    # P.append(pp.straight(15, 2))
-    # P.end_angle += 120
-    # P.append(pp.straight(10, 2))
-    # P.end_angle += 60
-    # P.append(pp.straight(20, 2))
-    # P.end_angle += 60
-    # P.append(pp.straight(10, 2))
-    # P.end_angle += 120
-    # P.append(pp.straight(15, 2))
-    # P.mirror((0,0), (1,0))
     P.append(pp.straight(10,2))
     P.end_angle += 60
     P.append(pp.straight(10,2))
