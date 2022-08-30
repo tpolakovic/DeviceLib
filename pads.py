@@ -32,6 +32,6 @@ def fan(size=[100,50], wire_width=50, trench=10, layer=1):
     top.movey(0.5*wire_width+0.5*trench)
     bottom.mirror((0,0),(1,0))
     bottom.movey(-0.5*wire_width-0.5*trench)
-    D.add_port(name='out', midpoint=[0,0], width=wire_width, orientation=0)
+    D.add_port(name='out', midpoint=[0,0], width=size[0]+wire_width, orientation=0)
     D.add_port(name='in', midpoint=[0,0], width=wire_width, orientation=180)
     return D

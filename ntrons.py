@@ -8,7 +8,7 @@ def ntron(width=10, choke=5, gate=1, negative=True, trench=5, layer=1):
     layer1 = Layer(layer, 1000)
     D = Device()
     C = pg.optimal_step(start_width=width, end_width=choke, layer=layer1)
-    G = pg.optimal_step(start_width=width, end_width=gate, layer=layer1, symmetric=True)
+    G = pg.optimal_step(start_width=width, end_width=gate, layer=layer1, symmetric=True, num_pts=256)
     T = pg.tee(size=[gate*3, choke], stub_size=[gate, gate], layer=layer1, taper_type='fillet')
 
     top = D.add_ref(C)
