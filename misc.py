@@ -43,3 +43,29 @@ def anl_logo(layer=1, scale=1):
     D.polygons[0].scale(scale)
     return D
 
+def alignment_marks(layer=1):
+    D = Device(name='Alignment')
+    CB = pg.cross(length=50, width=5)
+    CM = pg.cross(length=10, width=1)
+    CS = pg.cross(length=5, width=0.5)
+    bbox = CM.bbox
+    small_cross_1 = CM.add_ref(CS)
+    small_cross_1.move(origin=small_cross_1.center, destination=(bbox[1,1], bbox[1,1]))
+    small_cross_2 = CM.add_ref(CS)
+    small_cross_2.move(origin=small_cross_2.center, destination=(bbox[1,1], bbox[0,1]))
+    small_cross_3 = CM.add_ref(CS)
+    small_cross_3.move(origin=small_cross_3.center, destination=(bbox[0,1], bbox[0,1]))
+    small_cross_4 = CM.add_ref(CS)
+    small_cross_4.move(origin=small_cross_4.center, destination=(bbox[0,0], bbox[1,1]))
+    bbox = CB.bbox
+    med_cross_1 = CB.add_ref(CM)
+    med_cross_1.move(origin=med_cross_1.center, destination=(bbox[1,1], bbox[1,1]))
+    med_cross_2 = CB.add_ref(CM)
+    med_cross_2.move(origin=med_cross_2.center, destination=(bbox[1,1], bbox[0,1]))
+    med_cross_3 = CB.add_ref(CM)
+    med_cross_3.move(origin=med_cross_3.center, destination=(bbox[0,1], bbox[0,1]))
+    med_cross_4 = CB.add_ref(CM)
+    med_cross_4.move(origin=med_cross_4.center, destination=(bbox[0,0], bbox[1,1]))
+    big_cross = D.add_ref(CB)
+    D = pg.union(D, layer=layer)
+    return D
