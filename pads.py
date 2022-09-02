@@ -5,7 +5,7 @@ from phidl import Device, Layer
 import phidl.geometry as pg
 import phidl.path as pp
 
-def pad(size=[350, 350], wire_width=50, negative=True, trench=10, layer=2, metal_layer=12):
+def pad(size=[350, 350], wire_width=50, negative=True, trench=10, layer=2, metal_layer=12, shadow_layer=32, shadow_extra=20):
     size = np.array(size)
     stub_size = np.array([wire_width, wire_width/2])
     layer_device = Layer(layer, 1000)
@@ -18,7 +18,9 @@ def pad(size=[350, 350], wire_width=50, negative=True, trench=10, layer=2, metal
     R = pg.rectangle(size = size - 10, layer=layer_metal)
     R.move(-0.5 * (size - 10))
     D.add(R)
-    #D.add_port(name='out', port=etch.ports[1])
+    SR = pg.rectangle(size=(R.xsize + shadow_extra, R.ysize + shadow_extra), layer=shadow_layer)
+    SR.move(origin=SR.center, destination=(0,0))
+    D.add(SR)
     return D
 
 def fan(size=[100,50], wire_width=50, trench=10, layer=1):
