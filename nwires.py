@@ -3,7 +3,7 @@
 from phidl import Device, Layer
 import phidl.geometry as pg
 
-def snspd(width=0.1, pitch=0.2, size=(10,10), trench=2, connector_width=None, turn_ratio=5, layer=1):
+def snspd(width=0.1, pitch=0.2, size=(10,10), trench=0.25, connector_width=None, turn_ratio=5, layer=1, negative=True):
     D = Device('Pixel')
     if connector_width:
         W = pg.snspd_expanded(wire_width=width, wire_pitch=pitch, size=size, connector_width=connector_width, turn_ratio=turn_ratio, layer=layer)
@@ -13,11 +13,15 @@ def snspd(width=0.1, pitch=0.2, size=(10,10), trench=2, connector_width=None, tu
     D.add_port(1, port=W.ports[1])
     D.add_port(2, port=W.ports[2])
     D.flatten()
+    if negative:
+        D = pg.outline(D, distance=trench, layer=layer, open_ports=True)
+        D.ports[1].midpoint -= (trench,0)
+        D.ports[2].midpoint += (trench,0)
     return D
 
 def snspd_array(width=0.1, pitch=0.2, ch_width=1, size=(10,10), n=(4,4), negative=True, trench=0.25, turn_ratio=5, ch1_layer=1, ch2_layer=2, via_layer=3):
     D = Device()
-    P = snspd(width, pitch, size, trench, turn_ratio=turn_ratio, layer=ch1_layer)
+    P = snspd(width, pitch, size, trench, turn_ratio=turn_ratio, layer=ch1_layer, negative=False)
 
     L1 = Device('Layer1')
     wirepix = L1.add_ref(P)
