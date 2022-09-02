@@ -5,7 +5,8 @@ from phidl import Device, Layer
 import phidl.geometry as pg
 import phidl.path as pp
 
-def pad(size=[350, 350], wire_width=50, negative=True, trench=10, layer=2, metal_layer=12, shadow_layer=32, shadow_extra=20):
+def pad(size=(350, 350), wire_width=50, negative=True, trench=10, layer=2, metal_layer=12,
+        shadow_layer=32, shadow_extra=20):
     size = np.array(size)
     stub_size = np.array([wire_width, wire_width/2])
     layer_device = Layer(layer, 1000)
@@ -23,7 +24,7 @@ def pad(size=[350, 350], wire_width=50, negative=True, trench=10, layer=2, metal
     D.add(SR)
     return D
 
-def fan(size=[100,50], wire_width=50, trench=10, layer=1):
+def fan(size=(100,50), wire_width=50, trench=10, layer=1):
     layer1 = Layer(layer, 1000)
     D = Device()
     P = pp.euler(radius=size[1], use_eff=True)

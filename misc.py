@@ -5,7 +5,6 @@ import phidl.geometry as pg
 import phidl.path as pp
 
 def _anl_logo_base():
-    D = Device()
     P = Path()
     P.append(pp.straight(10,2))
     P.end_angle += 60
@@ -66,6 +65,6 @@ def alignment_marks(layer=1):
     med_cross_3.move(origin=med_cross_3.center, destination=(bbox[0,1], bbox[0,1]))
     med_cross_4 = CB.add_ref(CM)
     med_cross_4.move(origin=med_cross_4.center, destination=(bbox[0,0], bbox[1,1]))
-    big_cross = D.add_ref(CB)
+    D.add_ref(CB)
     D = pg.union(D, layer=layer)
     return D
