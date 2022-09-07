@@ -79,17 +79,17 @@ def snspd_array(width=0.1, pitch=0.2, ch_width=1, size=(10,10), n=(4,4), negativ
     A = Device('Pixel_Array')
     arr = A.add_array(D, columns=n[0], rows=n[1], spacing=(D.xsize,D.ysize))
     for i in range(arr.columns):
-        A.add_port(name='Col{}S'.format(i),
+        A.add_port(name='ColS_{}'.format(i),
                    midpoint=(D.ports['S'].midpoint[0]+i*D.xsize, D.ports['S'].midpoint[1]),
                    width=ch_width, orientation=-90)
-        A.add_port(name='Col{}N'.format(i),
+        A.add_port(name='ColN_{}'.format(i),
                    midpoint=(D.ports['S'].midpoint[0]+i*D.xsize, D.ports['N'].midpoint[1]+(arr.rows-1)*D.ysize),
                    width=ch_width, orientation=90)
     for j in range(arr.rows):
-        A.add_port(name='Row{}E'.format(j),
+        A.add_port(name='RowE_{}'.format(j),
                    midpoint=(D.ports['E'].midpoint[0], D.ports['E'].midpoint[1]+j*D.ysize),
                    width=ch_width, orientation=180)
-        A.add_port(name='Row{}W'.format(j),
+        A.add_port(name='RowW_{}'.format(j),
                    midpoint=(D.ports['W'].midpoint[0]+(arr.columns-1)*D.xsize, D.ports['W'].midpoint[1]+j*D.ysize),
                    width=ch_width, orientation=0)
     return A

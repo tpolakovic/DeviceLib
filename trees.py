@@ -5,7 +5,7 @@ import phidl.geometry as pg
 import phidl.path as pp
 import phidl.routing as pr
 
-def branch_start(width=2, size=10, layer=2):
+def _branch_start(width=2, size=10, layer=2):
     D = Device()
     P1 = pp.Path()
     P1.append( pp.euler(angle=90,radius=size/2, use_eff=True) )
@@ -45,13 +45,13 @@ def _choke(width, choke_width, choke_length, layer):
     CD.flatten()
     return CD
 
-def tree_branch(width=5, pitch=50, choke_width=1, choke_length=2, choke_dist=10, layer=2,
+def _tree_branch(width=5, pitch=50, choke_width=1, choke_length=2, choke_dist=10, layer=2,
                layer_channel=12, negative=True, trench=2):
     if not negative:
         trench = 0
     size = pitch/2
     D = Device()
-    B = branch_start(width=width, size=size, layer=layer)
+    B = _branch_start(width=width, size=size, layer=layer)
     branch = D.add_ref(B)
 
     C = _choke(width, choke_width, choke_length, layer)
@@ -110,7 +110,7 @@ def tree(n_levels = 4, width=5, pitch=50, choke_width=1, choke_length=2, choke_d
     for i in range(n_levels):
         _pitch = 2**(n_levels-i)*pitch
         branches.append(
-            tree_branch(width, _pitch, choke_width, choke_length, choke_dist, layer, layer_channel, negative, trench)
+            _tree_branch(width, _pitch, choke_width, choke_length, choke_dist, layer, layer_channel, negative, trench)
         )
 
     levels = []
@@ -136,12 +136,12 @@ def tree(n_levels = 4, width=5, pitch=50, choke_width=1, choke_length=2, choke_d
             D.add(PR2)
     D.add_port(name='in', port=levels[0][0].ports['in'])
     for (i, device) in enumerate(levels[-1]):
-        D.add_port(name='out1_{}'.format(i), port=device.ports['out1'])
-        D.add_port(name='out2_{}'.format(i), port=device.ports['out2'])
+        D.add_port(name='out_{}'.format(2*i), port=device.ports['out1'])
+        D.add_port(name='out_{}'.format(2*i+1), port=device.ports['out2'])
 
     for (i, level) in enumerate(levels):
         D.add_port(name='L1_{}'.format(i), port=level[0].ports['L1'])
-        D.add_port(name='L2_{}'.format(i), port=level[0].ports['L2'])
-        D.add_port(name='R1_{}'.format(i), port=level[-1].ports['R1'])
+        D.add_port(name='R1_{}'.format(i), port=level[0].ports['L2'])
+        D.add_port(name='L2_{}'.format(i), port=level[-1].ports['R1'])
         D.add_port(name='R2_{}'.format(i), port=level[-1].ports['R2'])
     return D
