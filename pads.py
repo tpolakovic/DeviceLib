@@ -5,36 +5,54 @@ from phidl import Device, Layer
 import phidl.geometry as pg
 import phidl.path as pp
 
-def pad(size=(350, 350), wire_width=50, negative=True, trench=10, layer=2, metal_layer=12,
-        shadow_layer=32, shadow_extra=20):
+def pad(size = (350, 350), wire_width = 50, negative = True, trench = 10, layer = None, metal_layer = None,
+                shadow_layer = None, shadow_extra = 20):
+    if not negative:
+        trench = 0
     size = np.array(size)
-    stub_size = np.array([wire_width, wire_width/2])
-    layer_device = Layer(layer, 1000)
-    layer_metal = Layer(metal_layer, 1000)
-    D = pg.flagpole(size=size, stub_size=stub_size, taper_type='fillet', layer=layer_device)
-    D.move(-0.5 * size)
-    D.remove(D.ports[2])
+    D = Device()
+    T = pg.tee(size = size, stub_size = (wire_width, wire_width), taper_type = 'fillet', layer = layer)
+    D.add_port(name = 1, port = T.ports[3])
+    T.remove([T.ports[1], T.ports[2]])
+    D.flatten()
     if negative:
-        D = pg.outline(D, distance=trench, open_ports=trench+1, layer=layer_device)
-    R = pg.rectangle(size = size - 10, layer=layer_metal)
-    R.move(-0.5 * (size - 10))
-    D.add(R)
-    SR = pg.rectangle(size=(R.xsize + shadow_extra, R.ysize + shadow_extra), layer=shadow_layer)
-    SR.move(origin=SR.center, destination=(0,0))
-    D.add(SR)
+        T = pg.outline(T, distance = trench, open_ports = trench+1, layer = layer)
+    P = pg.rectangle(size = size*0.9, layer = metal_layer)
+    P.move(origin = P.center, destination = (0, size[1]/2))
+    D.add_ref(T)
+    if negative:
+        D.add_ref(P)
+    S = pg.rectangle(size = D.size+shadow_extra, layer = shadow_layer)
+    S.move(origin = S.center, destination = D.center)
+    D.add_ref(S)
+    D.flatten()
+    D.move(origin=D.center, destination=(0,0))
+    D.name = "Pad"
     return D
 
-def fan(size=(100,50), wire_width=50, trench=10, layer=1):
+def fan(size = (100, 50), wire_width = 50, trench = 10, layer = None, optimize=None):
     layer1 = Layer(layer, 1000)
     D = Device()
-    P = pp.euler(radius=size[1], use_eff=True)
-    P.append(pp.straight(length=size[0]-size[1]))
-    segment = P.extrude(trench, layer=layer1)
+    P = pp.euler(radius = size[1], use_eff = True)
+    P.append(pp.straight(length = size[0]-size[1]))
+    segment = P.extrude(trench, layer = layer1)
     top = D.add_ref(segment)
     bottom = D.add_ref(segment)
     top.movey(0.5*wire_width+0.5*trench)
-    bottom.mirror((0,0),(1,0))
+    bottom.mirror((0, 0), (1, 0))
     bottom.movey(-0.5*wire_width-0.5*trench)
-    D.add_port(name='out', midpoint=[0,0], width=size[0]+wire_width, orientation=0)
-    D.add_port(name='in', midpoint=[0,0], width=wire_width, orientation=180)
+    D.add_port(name = 'out', midpoint = [size[1]/2, 0], width = size[0]+wire_width, orientation = 0)
+    D.add_port(name = '_in', midpoint = [0, 0], width = wire_width, orientation = 180)
+    if optimize:
+        ST = pg.optimal_step(start_width=optimize, end_width=wire_width, symmetric=True)
+        ST = pg.outline(ST, distance=trench, open_ports=2*trench, layer=layer)
+        step = D << ST
+        step.connect(2, D.ports['_in'])
+        D.add_port(name = 'in', port=step.ports[1])
+        D.remove(D.ports['_in'])
+    else:
+        D.add_port(name = 'in', port=D.ports['_in'])
+        D.remove(D.ports['_in'])
+    D.flatten()
+    D.name = "Fan"
     return D
