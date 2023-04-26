@@ -90,7 +90,7 @@ def bus(n = 3, width = 10, pitch = 20, length = 100, negative = True, trench = 2
         D = pg.outline(D, distance = trench, open_ports = width+EPS)
     return D
 
-def stiches(device, WF=100, WA=None, width=None, layer=0):
+def stiches(device, which_layer, WF=100, WA=None, width=None, layer=0):
     if width is None:
         width = WF/20
     O = Device()
@@ -110,6 +110,7 @@ def stiches(device, WF=100, WA=None, width=None, layer=0):
         s.movey(i - width/2)
         s.movex(origin=s.x, destination=warr.x)
 
-    S = pg.boolean(device, O, "and", layer=layer)
+    to_stitch = pg.extract(device, layers=which_layer)
+    S = pg.boolean(to_stitch, O, "and", layer=layer)
     S.name = "stitching"
     return S

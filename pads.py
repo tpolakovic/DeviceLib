@@ -1,9 +1,39 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 import numpy as np
 from phidl import Device, Layer
 import phidl.geometry as pg
 import phidl.path as pp
+
+def launchpad(size = (350, 350), wire_width = 50, negative = True, trench = 10, layer = None, metal_layer = None,
+              shadow_layer = None, shadow_extra = 20):
+    size = np.array(size)
+    out = Device("Launchpad")
+    D = Device()
+    P1 = pg.compass(size = size, layer = layer)
+    T1 = pg.taper(length = size[0]/3, width1 = size[1], width2 = wire_width, layer = layer)
+    ip = D.add_ref(P1)
+    it = D.add_ref(T1)
+    ip.movex(-size[0]/2)
+    it.connect(port=1, destination=ip.ports['E'])
+    out.add_port(name = 1, port = it.ports[2])
+
+    GP = pg.rectangle(size = size*0.9, layer = metal_layer)
+    gp = out.add_ref(GP)
+    gp.move(origin=gp.center, destination=ip.center)
+
+    D2 = Device()
+    P2 = pg.compass(size = (size[0] * 1.5, size[1] * 2), layer = layer)
+    T2 = pg.taper(length = size[0]/3, width1 = P2.ysize, width2 = wire_width + 2 * trench, layer = layer)
+    op = D2.add_ref(P2)
+    ot = D2.add_ref(T2)
+    op.movex(origin=op.xmax, destination=0)
+    ot.connect(port=1, destination=op.ports['E'])
+
+    Dout = pg.boolean(D, D2, 'B-A', layer = layer)
+
+    out << Dout
+    return out
 
 def pad(size = (350, 350), wire_width = 50, negative = True, trench = 10, layer = None, metal_layer = None,
                 shadow_layer = None, shadow_extra = 20):
