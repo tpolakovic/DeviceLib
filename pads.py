@@ -41,7 +41,10 @@ def pad(size = (350, 350), wire_width = 50, negative = True, trench = 10, layer 
         trench = 0
     size = np.array(size)
     D = Device()
-    T = pg.tee(size = size, stub_size = (wire_width, wire_width), taper_type = 'fillet', layer = layer)
+    if trench < wire_width:
+        T = pg.tee(size = size, stub_size = (wire_width, wire_width), taper_type = 'fillet', layer = layer)
+    else:
+        T = pg.tee(size = size, stub_size = (wire_width, trench), taper_type = 'fillet', layer = layer)
     D.add_port(name = 1, port = T.ports[3])
     T.remove([T.ports[1], T.ports[2]])
     D.flatten()
