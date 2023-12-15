@@ -90,6 +90,42 @@ def bus(n = 3, width = 10, pitch = 20, length = 100, negative = True, trench = 2
         D = pg.outline(D, distance = trench, open_ports = width+EPS)
     return D
 
+def hall_cross(width = 2, length = 10, connector_width=1, connector_length=2, trench = None, layer = None):
+    D = Device()
+    IC = pg.compass(size = (connector_width, width), layer = layer)
+    C = pg.straight(size = (width, length), layer = layer)
+    P = pg.straight(size = (connector_width, connector_length), layer = layer)
+
+    channel_connector1 = D.add_ref(IC)
+    channel_connector2 = D.add_ref(IC)
+    channel = D.add_ref(C)
+    channel.connect(1, channel_connector1.ports['E'])
+    channel_connector2.connect("W", channel.ports[2])
+
+    stub1 = D.add_ref(IC)
+    stub2 = D.add_ref(IC)
+    stub1.connect("E", channel_connector1.ports['W'])
+    stub2.connect("W", channel_connector2.ports['E'])
+
+    probe_NW = D.add_ref(P)
+    probe_NW.connect(1, channel_connector1.ports['N'])
+    probe_SW = D.add_ref(P)
+    probe_SW.connect(1, channel_connector1.ports['S'])
+    probe_NE = D.add_ref(P)
+    probe_NE.connect(1, channel_connector2.ports['N'])
+    probe_SE = D.add_ref(P)
+    probe_SE.connect(1, channel_connector2.ports['S'])
+
+    D.add_port(name = "channel_in", port=stub1.ports['W'])
+    D.add_port(name = "channel_out", port=stub2.ports['E'])
+    D.add_port(name = "probe_NW", port=probe_NW.ports[2])
+    D.add_port(name = "probe_SW", port=probe_SW.ports[2])
+    D.add_port(name = "probe_NE", port=probe_NE.ports[2])
+    D.add_port(name = "probe_SE", port=probe_SE.ports[2])
+    if trench:
+        D = pg.outline(D, distance = trench, open_ports = width+EPS, layer=layer)
+    return D
+
 def stiches(device, which_layer, WF=100, WA=None, width=None, layer=0):
     if width is None:
         width = WF/20
