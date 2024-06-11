@@ -87,7 +87,7 @@ def bus(n = 3, width = 10, pitch = 20, length = 100, negative = True, trench = 2
         D.add_port(name = f'in_{i}', port = rect.ports[2])
         D.add_port(name = f'out_{i}', port = rect.ports[1])
     if negative:
-        D = pg.outline(D, distance = trench, open_ports = width+EPS)
+        D = pg.outline(D, distance = trench, open_ports = width+EPS, layer = layer)
     return D
 
 def hall_cross(width = 2, length = 10, connector_width=1, connector_length=2, trench = None, layer = None):
