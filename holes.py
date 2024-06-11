@@ -8,16 +8,9 @@ Array of Hexagonal Holes Around an Arbitrary Object
 Version 2.1
 """
 
-from phidl import Device, Layer, set_quickplot_options, Path
+from phidl import Device
 import phidl.geometry as pg
-import phidl.routing as pr
-from phidl import quickplot as qp
-import phidl.path as pp
 import numpy as np
-from DeviceLib import nwires
-from DeviceLib import pads
-from DeviceLib import ntrons
-from DeviceLib import misc
 
 # Makes an hexagonal array of holes around an object
 #   around --> Device that the array is made around
@@ -103,14 +96,6 @@ def hex_Array(avoid = None, box = None, a = 10, radius = 1, offset = 10, layer =
     dX = a/about
     dY = 2*disY/about
     
-# =============================================================================
-#     #For troubleshooting
-#     cir= Device('test')
-#     ret = pg.rectangle(size = (dX, dY), layer = layer)
-#     rect = cir.add_ref(ret)
-#     rect.move(destination = (-dX/2, -dY/2))
-# =============================================================================
-    
     #Creating raster arrays, where false means the space is free
     allowed1 = pg._rasterize_polygons(shapes,
                                       box,
@@ -153,28 +138,3 @@ def hex_Array(avoid = None, box = None, a = 10, radius = 1, offset = 10, layer =
     temp2.move(destination = box[0])
     temp = F.add_ref(avoid)
     return F
-
-CC = Device('CC')
-#SHA = CC.add_ref(pg.L(20, (40, 50), layer =1))
-SHA = CC.add_ref(misc.anl_logo(layer = 2))
-#SHA.move(destination = (10, 10))
-#SHA = CC.add_ref(pg.arc(6, 2, 45, 90, layer = 1))
-tesbox = [[-40, -30], [50, 50]]
-
-EE = Device('CC')
-boundaries = EE.add_ref(pg.rectangle((90, 80), 0))
-boundaries.move(destination = (-40, -30))
-liner = pg.outline(SHA, 3, layer = 3)
-ques = EE.add_ref(liner)
-
-ep = EE.add_ref(hex_Array(avoid=CC,
-                          box = tesbox,
-                          a=10,
-                          radius=.5,
-                          offset=3,
-                          layer=1))
-#avoid = None, box = None, a = 10, radius = 1, offset = 10, layer = 1
-qp(EE)
-EE.write_gds('EE.gds')
-
-#look = hex_Array(CC,tesbox, offset = 2)
