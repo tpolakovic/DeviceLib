@@ -160,7 +160,7 @@ def stiches(device, which_layer, WF=100, WA=None, width=None, layer=0):
 #   offset --> distance between object and nearest dot
 #   layer --> Layer in which end result should  be
 #
-# Version 1.0
+# Version 1.0: Makes array and subtracts the device plus outline from it
 def hole_array(around = None, a = 10, size = (500, 500), radius = 1, offset = 10, layer = 1):
     circle = pg.circle(radius = radius, layer = layer)
     R = Device('Ref')
@@ -205,10 +205,6 @@ def hole_array(around = None, a = 10, size = (500, 500), radius = 1, offset = 10
 #   layer --> Layer in which end result should  be
 #
 # Version 2.1
-#   Issues: When the circles are big enough, they are outside the raster,
-#               thus meaning they can be out of bounds
-#           When the circles are small enough, the raster boxes can be too big,
-#               which then fails to make boxes near the object
 def hex_Array(avoid = None, box = None, a = 10, radius = 1, offset = 10, layer = 1):
     #Creating end product device and the dots used
     F = Device('Filler')
@@ -248,8 +244,8 @@ def hex_Array(avoid = None, box = None, a = 10, radius = 1, offset = 10, layer =
     dots2 = []
     
     
-    tempD2 = Device('EVEN MORE THAN THE LAST')
-    #Creating each dot
+    R = Device('Hole Array')
+    #Creating each hole
     for row in range(size(allowed1, 0)):
         if row % about == 0:
             dots1.append([])
@@ -257,7 +253,7 @@ def hex_Array(avoid = None, box = None, a = 10, radius = 1, offset = 10, layer =
                 if col % about == 0:
                     dots1[int(row/about)].append([])
                     if not allowed1[row][col]:
-                        dots1[int(row/about)][int(col/about)] = tempD2.add_ref(cir)
+                        dots1[int(row/about)][int(col/about)] = R.add_ref(cir)
                         dots1[int(row/about)][int(col/about)].move(
                             destination = (dX/2 + int(col/about)*a, dY/2 + int(row/about)*2*disY))
         
@@ -269,10 +265,8 @@ def hex_Array(avoid = None, box = None, a = 10, radius = 1, offset = 10, layer =
                 if col % about == 0:
                     dots2[int(row/about)].append([])
                     if not allowed2[row][col]:
-                        dots2[int(row/about)][int(col/about)] = tempD2.add_ref(cir)
+                        dots2[int(row/about)][int(col/about)] = R.add_ref(cir)
                         dots2[int(row/about)][int(col/about)].move(
                             destination = (dX/2 + a/2 + int(col/about)*a, dY/2 + disY + int(row/about)*2*disY))
-    
-    temp2 = F.add_ref(tempD2)
-    temp2.move(destination = box[0])
-    return F
+
+    return R
