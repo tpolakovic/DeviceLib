@@ -312,3 +312,36 @@ def snap(width=0.1, pitch=0.2, size=(10,10), n=3, n_segs=3, turn_ratio=4, num_pt
         S.ports[1].midpoint[0] -= trench
 
     return S
+
+def ps_junction(width1 = 1, width2 = 1, widthj = 0.05, length = 1):
+    D = Device()
+    s1 = D.add_ref(
+        pg.optimal_step(end_width = width1, start_width = widthj, symmetric = True)
+    )
+    s2 = D.add_ref(
+        pg.optimal_step(end_width = width2, start_width = widthj, symmetric = True)
+    )
+    junction = D.add_ref(pg.straight((widthj, length)))
+    s1.connect(1, junction.ports[1])
+    s2.connect(1, junction.ports[2])
+    D.add_port(1, port = s1.ports[2])
+    D.add_port(2, port = s2.ports[2])
+    D.flatten()
+
+    return D
+
+def charge_island():
+    D = Device()
+    P = ps_junction(width1=1, width2=4)
+    psj1 = D.add_ref(P)
+    psj2 = D.add_ref(P)
+    psj1.connect(1, psj2.ports[1])
+
+    D.move(origin=D.center, destination=(0,0))
+    D.rotate(90)
+
+    tap = D.add_ref(pg.taper(5, 10, 3))
+    tap.rotate(-90)
+    tap.movey(6)
+
+    return D
