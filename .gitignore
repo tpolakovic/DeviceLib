@@ -126,3 +126,9 @@ dmypy.json
 
 # GDS files
 *.gds
+
+# Coding harness files
+CLAUDE.md
+AGENTS.md
+.claude/
+.opencode/
