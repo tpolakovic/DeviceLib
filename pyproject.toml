@@ -30,7 +30,7 @@ fill = [
 ]
 
 [project.urls]
-Homepage = "https://eicweb.phy.anl.gov/nanowire/fabrication/devicelib"
+Homepage = "https://github.com/tpolakovic/DeviceLib"
 
 [tool.setuptools]
 packages = ["devicelib"]

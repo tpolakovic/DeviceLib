@@ -1,13 +1,12 @@
 # DeviceLib
 
 Library for quick design of superconducting device chips, built on
-[PHIDL](https://github.com/amccaugh/phidl). Example usage can be found
-[here](https://eicweb.phy.anl.gov/-/snippets/54).
+[PHIDL](https://github.com/amccaugh/phidl).
 
 ## Install
 
 ```bash
-git clone git@eicweb.phy.anl.gov:nanowire/fabrication/devicelib.git DeviceLib
+git clone https://github.com/tpolakovic/DeviceLib.git
 cd DeviceLib
 pip install -e .
 ```
